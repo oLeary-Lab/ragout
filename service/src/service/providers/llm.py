@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionMessageParam
 
 from service.providers.base import ChatPrompt
 
@@ -10,8 +11,12 @@ class OpenAILLM:
         self._client = AsyncOpenAI(api_key=api_key)
         self._model = model
 
-    def _messages(self, prompt: ChatPrompt, history: list) -> list[dict]:
-        msgs: list[dict] = [{"role": "system", "content": prompt.system}]
+    def _messages(
+        self, prompt: ChatPrompt, history: list
+    ) -> list[ChatCompletionMessageParam]:
+        msgs: list[ChatCompletionMessageParam] = [
+            {"role": "system", "content": prompt.system}
+        ]
         msgs.extend({"role": r, "content": c} for r, c in history)
         if prompt.context:
             ctx = "\n\n".join(prompt.context)
